@@ -8,7 +8,7 @@
   ],
   "routes": [
     {
-      "src": "/tensions",
+      "src": "/api/(.*)",
       "dest": "server/main.js"
     }
   ]

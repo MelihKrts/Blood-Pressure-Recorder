@@ -31,7 +31,7 @@ async function connectToMongoDB() {
 }
 
 // API Endpoint - Tension verilerini kaydetme
-app.post('/tensions', async (req, res) => {
+app.post('/api/tensions', async (req, res) => {
     try {
         const { bigTension, smallTension } = req.body;
 

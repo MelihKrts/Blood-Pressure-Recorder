@@ -17,7 +17,8 @@ const Content = () => {
 
         try {
             // .env dosyasındaki API URL'yi kullan
-            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+            const API_URL = import.meta.env.VITE_API_URL || 'https://pressure-recorder.vercel.app/api';
+
 
             const response = await fetch(`${API_URL}/tensions`, {
                 method: 'POST',
