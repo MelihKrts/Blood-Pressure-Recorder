@@ -1,77 +1,48 @@
-import {useState} from "react";
-import axios from "axios";
-import {Slide, toast, ToastContainer} from "react-toastify";
+import {FormEvent, useState} from "react";
+// import axios from "axios";
+// import {Slide, toast, ToastContainer} from "react-toastify";
 import InputField from "../component/ui/InputField.tsx";
 import ContentBox from "../component/ui/ContentBox.tsx";
 
 const Content = () => {
-    const [bigTension, setBigTension] = useState<string>("");
-    const [smallTension, setSmallTension] = useState<string>("");
+    const [bigTension, setBigTension] = useState("");
+    const [smallTension, setSmallTension] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState("");
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-
-        // Validate the inputs before submission
-        const bigTensionNum = Number(bigTension);
-        const smallTensionNum = Number(smallTension);
-
-        if (!bigTension || bigTensionNum < 1) {
-            toast.error("Big tension must be a number greater than 0.", {
-                position: "top-right",
-                theme: "colored",
-                autoClose: 3000,
-                closeOnClick: true,
-                transition: Slide,
-            });
-            return; // Prevent form submission if validation fails
-        }
-
-        if (!smallTension || smallTensionNum < 1) {
-            toast.error("Small tension must be a number greater than 0.", {
-                position: "top-right",
-                theme: "colored",
-                autoClose: 3000,
-                closeOnClick: true,
-                transition: Slide,
-            });
-            return; // Prevent form submission if validation fails
-        }
+        setLoading(true);
+        setMessage("");
 
         try {
-            // Make the POST request to save the data
-            await axios.post(`pressure-recorder.vercel.app/data`, {
-                bigTension: bigTensionNum,
-                smallTension: smallTensionNum,
+            // .env dosyasındaki API URL'yi kullan
+            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
+            const response = await fetch(`${API_URL}/tensions`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    bigTension: parseInt(bigTension),
+                    smallTension: parseInt(smallTension)
+                }),
             });
 
-            toast.success("Tension info saved successfully", {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "colored",
-                transition: Slide,
-            });
-            setBigTension("");
-            setSmallTension("");
-        } catch (error) {
-            toast.error("Failed to save tension info", {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "colored",
-                transition: Slide,
-            });
-            setBigTension("");
-            setSmallTension("");
-            console.error("Error saving tension info:", error);
+            const data = await response.json();
+
+            if (response.ok) {
+                setMessage("Veriler başarıyla kaydedildi!");
+                setBigTension("");
+                setSmallTension("");
+            } else {
+                setMessage(`Hata: ${data.message || 'Bir şeyler yanlış gitti'}`);
+            }
+        } catch (error: any) {
+            setMessage(`Hata: ${error.message}`);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -79,6 +50,8 @@ const Content = () => {
     return (
         <ContentBox>
             <div className="container flex justify-center items-center flex-col">
+                {message && <div className={`p-2 mb-4 rounded ${message.includes('Hata') ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>{message}</div>}
+
                 <form onSubmit={handleSubmit} className="flex w-6/12 flex-col gap-2">
                     <label htmlFor="bigTension">Big Tension</label>
                     <InputField
@@ -93,7 +66,6 @@ const Content = () => {
                     />
 
                     <label htmlFor="smallTension">Small Tension</label>
-
                     <InputField
                         placeholder="Enter a small tension"
                         type="number"
@@ -107,11 +79,13 @@ const Content = () => {
 
                     <button
                         className="bg-[#28a745] text-white border-[#28a745] hover:bg-[#218838] border-[#1e7e34] rounded-md p-2 transition duration-150 hover:ease-in"
-                        type="submit">Save
+                        type="submit"
+                        disabled={loading}
+                    >
+                        {loading ? 'Kaydediliyor...' : 'Kaydet'}
                     </button>
                 </form>
 
-                <ToastContainer/>
             </div>
         </ContentBox>
     );
