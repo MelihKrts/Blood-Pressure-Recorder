@@ -1,31 +1,33 @@
-// const express = require("express");
-// require("dotenv").config();
-// const app = express();
-// const mongoose = require("mongoose");
-// const cors = require("cors");
-// const corsOptions = {
-//     origin: "http://localhost:5173",
-//     origin:"https://pressure-recorder.vercel.app"
-// }
-//
-// app.use(cors(corsOptions));
-// app.use(express.json());
-//
-// // Connect database
-//
-// mongoose.connect(process.env.MONGODB_URI, {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true,
-// });
-//
-// // Schema
-//
-// const tensionSchema = new mongoose.Schema({
-//     bigTension: Number,
-//     smallTension: Number,
-// })
-//
-// const Tension = mongoose.model("Tension", tensionSchema);
+const express = require("express");
+require("dotenv").config();
+const app = express();
+const mongoose = require("mongoose");
+const cors = require("cors");
+const corsOptions = {
+    origin: "http://localhost:5173",
+    origin:"https://pressure-recorder.vercel.app",
+    methods:["POST"],
+    credentials: true,
+}
+
+app.use(cors(corsOptions));
+app.use(express.json());
+
+// Connect database
+
+mongoose.connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+});
+
+// Schema
+
+const tensionSchema = new mongoose.Schema({
+    bigTension: Number,
+    smallTension: Number,
+})
+
+const Tension = mongoose.model("Tension", tensionSchema);
 //
 //
 // // GET, POST, DELETE, PUT
@@ -39,17 +41,17 @@
 //     }
 // })
 //
-// app.post("/data", async (req, res) => {
-//     try {
-//         const {bigTension, smallTension} = req.body;
-//         const newTension = new Tension({bigTension, smallTension});
-//         await newTension.save();
-//         res.json({message: "Successfully Saved Tension"})
-//     } catch (error) {
-//         console.log(error.message);
-//         res.status(500).json({message: error.message})
-//     }
-// })
+app.post("/data", async (req, res) => {
+    try {
+        const {bigTension, smallTension} = req.body;
+        const newTension = new Tension({bigTension, smallTension});
+        await newTension.save();
+        res.json({message: "Successfully Saved Tension"})
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({message: error.message})
+    }
+})
 //
 // app.delete("/data/:id", async (req, res) => {
 //     try {
