@@ -112,3 +112,12 @@
 //     console.log("Server started on port 3000");
 // })
 //
+
+app.get("/data", async (req, res) => {
+    try {
+        const tensions = await Tension.find()
+        res.json(tensions)
+    } catch (error) {
+        res.status(500).json({message: error.message})
+    }
+})
