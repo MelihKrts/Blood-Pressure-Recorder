@@ -6,7 +6,7 @@
 const express = require("express");
 const cors = require("cors");
 const serverless = require("serverless-http");
-const dataRoutes = require("./data");
+const dataRoutes = require("./data/data");
 
 const app = express();
 
