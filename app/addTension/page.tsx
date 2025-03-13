@@ -104,14 +104,30 @@
 
 "use client";
 
-import { Input } from "@/components/ui/input";
-import { useState } from "react";
-import { Slide, toast, ToastContainer } from "react-toastify";
+import {Input} from "@/components/ui/input";
+import {useEffect, useState} from "react";
+import {Slide, toast, ToastContainer} from "react-toastify";
 // import "react-toastify/dist/ReactToastify.min.css";
 
 export default function AddTension() {
     const [bigTension, setBigTension] = useState<number | string>("");
     const [smallTension, setSmallTension] = useState<number | string>("");
+    const [tensionData, setTensionData] = useState<{ bigTension: number; smallTension: number; _id: string }[]>([]);
+
+    const fetchTensionData = async () => {
+        try {
+            const response = await fetch("/api/tension")
+            const data = await response.json();
+            setTensionData(data.tension);
+        }
+        catch (error) {
+            console.error("Error fetching tension data:", error);
+        }
+    }
+
+    useEffect(() => {
+        fetchTensionData(); // Sayfa yüklendiğinde verileri çek
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -155,6 +171,7 @@ export default function AddTension() {
 
             setBigTension("");
             setSmallTension("");
+            fetchTensionData();
 
         } catch (err: any) {
             toast.error(err.message, {
@@ -168,7 +185,7 @@ export default function AddTension() {
     };
 
     return (
-        <div className="flex items-center justify-center">
+        <div className="container flex-col flex items-center justify-center">
             <div className="w-1/2 py-4 flex flex-col">
                 <form onSubmit={handleSubmit}>
                     <label htmlFor="bigTension">Big Tension</label>
@@ -198,8 +215,24 @@ export default function AddTension() {
                         Submit
                     </button>
                 </form>
-                <ToastContainer />
+                <ToastContainer/>
             </div>
+
+            <div className="w-1/2 bg-gray-100 p-4 rounded-md shadow-md">
+                <h2 className="text-lg font-semibold mb-2">Recorded Tensions</h2>
+                {tensionData.length === 0 ? (
+                    <p>No records found.</p>
+                ) : (
+                    <ul className="space-y-2">
+                        {tensionData.map((tension) => (
+                            <li key={tension._id} className="bg-white p-2 rounded-md shadow-sm flex justify-between">
+                                <span>Big: {tension.bigTension} - Small: {tension.smallTension}</span>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </div>
+
         </div>
     );
 }
