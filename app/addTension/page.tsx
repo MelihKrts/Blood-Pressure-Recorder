@@ -256,7 +256,7 @@ export default function AddTension() {
                 <ToastContainer/>
             </div>
 
-            <div className="w-1/2 max-sm:w-11/12 md:w-3/4 bg-gray-100 p-4 rounded-md shadow-md">
+            <div className="w-1/2 max-sm:w-11/12 md:w-3/4 lg:w-1/2 bg-gray-100 p-4 rounded-md shadow-md">
                 <h2 className="text-lg font-semibold mb-2">Recorded Tensions</h2>
                 {tensionData.length === 0 ? (
                     <p>No records found.</p>
