@@ -14,3 +14,10 @@ export async function GET() {
    const tension = await Tension.find()
     return NextResponse.json({tension})
 }
+
+export async function DELETE(request) {
+    const id = request.nextUrl.searchParams.get("id");
+    await connectMongoDB();
+    await Tension.findByIdAndDelete(id)
+    return NextResponse.json({message:"Tension data deleted successfully"},{status:200})
+}

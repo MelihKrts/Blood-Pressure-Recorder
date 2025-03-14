@@ -5,7 +5,7 @@ interface Props {
     children?: React.ReactNode;
 }
 
-const Header: React.FC<Props> = (props) => {
+export const Header: React.FC<Props> = (props) => {
     return(
         <header className="w-full bg-blue-400 fixed top-0 z-10">
             <div className="container">
@@ -14,5 +14,3 @@ const Header: React.FC<Props> = (props) => {
         </header>
     )
 }
-
-export default Header
