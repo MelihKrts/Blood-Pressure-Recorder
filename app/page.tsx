@@ -11,7 +11,7 @@ export default function Home() {
     return (
         <>
                 <div className="container flex justify-center items-center">
-                    <div className="w-8/12 flex flex-col rounded-lg border bg-white shadow-lg">
+                    <div className="w-11/12 sm:w-full md:w-11/12 lg:w-11/12 flex flex-col rounded-lg border bg-white shadow-lg">
                         <div className="border-b px-4 py-3">
                             <div className={`${notoSansMono.className} text-sm font-medium`}>
                                 Pressure Recorder

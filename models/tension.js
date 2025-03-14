@@ -3,6 +3,8 @@ import mongoose, {Schema} from 'mongoose'
 const tensionSchema = new Schema({
         bigTension: Number,
         smallTension: Number,
+        selectedDate: Date,
+        pulse: Number,
     },
     {timestamps: true}
 )

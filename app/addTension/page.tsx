@@ -1,19 +1,84 @@
 "use client";
 
 import {Input} from "@/components/ui/input";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Slide, toast, ToastContainer} from "react-toastify";
 import jsPDF from "jspdf";
 import {saveAs} from "file-saver";
+import {Calendar} from "@/components/ui/calendar";
 
 export default function AddTension() {
     const [bigTension, setBigTension] = useState<number | string>("");
     const [smallTension, setSmallTension] = useState<number | string>("");
-    const [tensionData, setTensionData] = useState<{ bigTension: number; smallTension: number; _id: string }[]>([]);
+    const [tensionData, setTensionData] = useState<{
+        bigTension: number;
+        smallTension: number;
+        selectedDate: Date;
+        pulse: number;
+        _id: string
+    }[]>([]);
     const [loadingId, setLoadingId] = useState<string | null>(null);
+    const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+    const [pulse, setPulse] = useState<number | string>("")
+
+    const CleanForm = () => {
+        setBigTension("")
+        setSmallTension("")
+        setPulse("")
+        setSelectedDate(undefined)
+    }
+
+    const ValidateForm = () => {
+        if (!bigTension || Number(bigTension) < 1) {
+            toast.error("Please enter valid tension", {
+                position: "top-right",
+                theme: "colored",
+                autoClose: 3000,
+                closeOnClick: true,
+                transition: Slide,
+            });
+            return false
+        }
+
+        if (!smallTension || Number(smallTension) < 1) {
+            toast.error("Please enter valid tension", {
+                position: "top-right",
+                theme: "colored",
+                autoClose: 3000,
+                closeOnClick: true,
+                transition: Slide,
+            });
+            return false
+        }
+
+        if (!pulse || Number(pulse) < 1) {
+            toast.error("Please enter valid pulse", {
+                position: "top-right",
+                theme: "colored",
+                autoClose: 3000,
+                closeOnClick: true,
+                transition: Slide,
+            });
+            return false
+        }
+
+        if (!selectedDate) {
+            toast.error("Please select a date", {
+                position: "top-right",
+                theme: "colored",
+                autoClose: 3000,
+                closeOnClick: true,
+                transition: Slide,
+            });
+            return false;
+        }
+
+        return true
+
+    }
 
     const handleDownload = (format: "pdf" | "doc") => {
-        const content = tensionData.map(t => `Big Tension: ${t.bigTension}, Small Tension: ${t.smallTension}`).join("\n");
+        const content = tensionData.map(t => `Big Tension: ${t.bigTension}, Small Tension: ${t.smallTension} Date: ${t.selectedDate} Pulse: ${t.pulse}`,).join("\n");
         const filename = "TensionData";
 
         if (format === "pdf") {
@@ -78,17 +143,7 @@ export default function AddTension() {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
-        if (!bigTension || Number(bigTension) < 1) {
-            toast.error("Please enter valid amount", {
-                position: "top-right",
-                theme: "colored",
-                autoClose: 3000,
-                closeOnClick: true,
-                transition: Slide,
-            });
-            return;
-        }
+        if (!ValidateForm()) return
 
         try {
             const response = await fetch("/api/tension", {
@@ -99,6 +154,8 @@ export default function AddTension() {
                 body: JSON.stringify({
                     bigTension: Number(bigTension),
                     smallTension: Number(smallTension),
+                    selectedDate: selectedDate ? selectedDate.toISOString() : null,
+                    pulse: Number(pulse),
                 }),
             });
 
@@ -116,8 +173,7 @@ export default function AddTension() {
                 transition: Slide,
             });
 
-            setBigTension("");
-            setSmallTension("");
+            CleanForm()
             fetchTensionData();
 
         } catch (err: any) {
@@ -133,7 +189,7 @@ export default function AddTension() {
 
     return (
         <div className="container flex-col flex items-center justify-center">
-            <div className="w-1/2 py-4 flex flex-col">
+            <div className="w-1/2 max-sm:w-11/12 md:w-3/4 lg:w-1/2 py-4 flex flex-col">
                 <form onSubmit={handleSubmit}>
                     <label htmlFor="bigTension">Big Tension</label>
                     <Input
@@ -159,11 +215,39 @@ export default function AddTension() {
                         required
                         onInvalid={(e) => (e.target as HTMLInputElement).setCustomValidity("Please enter a tension value")}
                         onInput={(e) => (e.target as HTMLInputElement).setCustomValidity("")}
+                    />
 
+                    <label className="py-2 ">Date</label>
+
+                    <Calendar
+                        mode="single"
+                        selected={selectedDate}
+                        onSelect={setSelectedDate}
+                        required
+                        className="border rounded-md my-4 bg-white w-fit max-sm:m-auto"
+                    />
+
+
+                    {selectedDate && (
+                        <>
+                            <label>Selected Date</label>
+                            <div className="my-4 bg-blue-200  rounded-md"><p className="p-2">Selected
+                                Date: {selectedDate.toLocaleDateString()}</p></div>
+                        </>
+                    )}
+
+                    <label className="py-2">Pulse</label>
+
+                    <Input type="number" placeholder="Enter a pulse number" min="1" className="my-4 bg-white"
+                           value={pulse}
+                           onInvalid={(e) => (e.target as HTMLInputElement).setCustomValidity("Please enter a pulse value")}
+                           onInput={(e) => (e.target as HTMLInputElement).setCustomValidity("")}
+                           onChange={(e) => setPulse(Number(e.target.value) || "")}
+                           required
                     />
 
                     <button
-                        className="bg-[#28a745] text-white border-[#28a745] hover:bg-[#218838] border-[#1e7e34] rounded-md cursor-pointer p-2 transition duration-150 hover:ease-in w-1/4 mx-auto my-4"
+                        className="bg-[#28a745] text-white border-[#28a745] hover:bg-[#218838] border-[#1e7e34] rounded-md cursor-pointer p-2 transition duration-150 hover:ease-in w-1/4 sm:w-full md:w-1/2 lg:w-1/4 mx-auto my-4"
                         type="submit"
                     >
                         Submit
@@ -172,18 +256,23 @@ export default function AddTension() {
                 <ToastContainer/>
             </div>
 
-            <div className="w-1/2 bg-gray-100 p-4 rounded-md shadow-md">
+            <div className="w-1/2 max-sm:w-11/12 md:w-3/4 bg-gray-100 p-4 rounded-md shadow-md">
                 <h2 className="text-lg font-semibold mb-2">Recorded Tensions</h2>
                 {tensionData.length === 0 ? (
                     <p>No records found.</p>
                 ) : (
                     <ul className="space-y-2">
                         {tensionData.map((tension) => (
-                            <li key={tension._id} className="bg-white p-2 rounded-md shadow-sm flex justify-between">
-                                <span>Big: {tension.bigTension} - Small: {tension.smallTension}</span>
+                            <li key={tension._id} className="bg-white p-2 flex items-center rounded-md shadow-sm flex justify-between">
+                                <span>
+                                    Big: {tension.bigTension} - Small: {tension.smallTension} -
+                                    Date: {new Date(tension.selectedDate).toLocaleDateString()} -
+                                    Pulse: {tension.pulse}
+                                </span>
+
                                 <button
                                     onClick={() => handleDelete(tension._id)}
-                                    className="text-white text-center bg-[#dc3545] hover:bg-[#bb2d3b] transition duration-150 hover:ease-in rounded-md w-16 h-8 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="text-white text-center bg-[#dc3545] hover:bg-[#bb2d3b] transition duration-150 hover:ease-in rounded-md w-24 h-8 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                     disabled={loadingId === tension._id}
                                 >
                                     {loadingId === tension._id ? "Deleting..." : "Delete"}
@@ -193,11 +282,21 @@ export default function AddTension() {
                     </ul>
                 )}
                 <div className="flex gap-2 mt-4">
-                    <button onClick={() => handleDownload("pdf")}
-                            className="bg-blue-500 text-white p-2 rounded-md">Download as PDF
+                    <button
+                        onClick={() => handleDownload("pdf")}
+                        disabled={tensionData.length === 0}
+                        className={`bg-blue-500 text-white p-2 rounded-md transition ${
+                            tensionData.length === 0 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+                        }`}
+                    >
+                        Download as PDF
                     </button>
                     <button onClick={() => handleDownload("doc")}
-                            className="bg-green-500 text-white p-2 rounded-md">Download as DOC
+                            disabled={tensionData.length === 0}
+                            className={`bg-green-500 text-white p-2 rounded-md transition ${
+                                tensionData.length === 0 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+                            }`}
+                    >Download as DOC
                     </button>
                 </div>
             </div>
@@ -205,50 +304,3 @@ export default function AddTension() {
         </div>
     );
 }
-
-// "use client";
-//
-// import { useEffect, useState } from "react";
-// import { Input } from "@/components/ui/input";
-// import { Slide, toast, ToastContainer } from "react-toastify";
-//
-// export default function AddTension() {
-//     const [bigTension, setBigTension] = useState<number | string>("");
-//     const [smallTension, setSmallTension] = useState<number | string>("");
-//     const [tensionData, setTensionData] = useState<{ bigTension: number; smallTension: number; _id: string }[]>([]);
-//
-//     const fetchTensionData = async () => {
-//         try {
-//             const response = await fetch("/api/tension");
-//             const data = await response.json();
-//             setTensionData(data.tension);
-//         } catch (error) {
-//             console.error("Error fetching tension data:", error);
-//         }
-//     };
-//
-//     useEffect(() => {
-//         fetchTensionData();
-//     }, []);
-//
-//
-//     return (
-//         <div className="container flex-col flex items-center justify-center">
-//             <div className="w-1/2 bg-gray-100 p-4 rounded-md shadow-md">
-//                 <h2 className="text-lg font-semibold mb-2">Recorded Tensions</h2>
-//                 {tensionData.length === 0 ? (
-//                     <p>No records found.</p>
-//                 ) : (
-//                     <ul className="space-y-2">
-//                         {tensionData.map(tension => (
-//                             <li key={tension._id} className="bg-white p-2 rounded-md shadow-sm flex justify-between">
-//                                 <span>Big: {tension.bigTension} - Small: {tension.smallTension}</span>
-//                             </li>
-//                         ))}
-//                     </ul>
-//                 )}
-//             </div>
-//             <ToastContainer />
-//         </div>
-//     );
-// }
