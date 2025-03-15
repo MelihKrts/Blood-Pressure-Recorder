@@ -2,7 +2,7 @@ import {Geist, Geist_Mono} from "next/font/google";
 import "./globals.css";
 import {Footer, Header, PageWrapper} from "@/app/component"
 import React from "react";
-
+import {Metadata} from "next"
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -14,9 +14,10 @@ const geistMono = Geist_Mono({
     subsets: ["latin"],
 });
 
-export const metadata = {
+export const metadata: Metadata = {
     title: "Pressure Recorder",
     description: "Save to blood pressure recorder",
+    themeColor: "#f69435",
 };
 
 
@@ -27,6 +28,8 @@ export default function RootLayout({children,}: Readonly<{
         <html lang="en">
         <head>
             <link rel="manifest" href="/manifest.json"/>
+            <link rel="icon" href="/icon-192x192.png"/>
+            <meta name="theme-color" content="#ffffff"/>
         </head>
         <body
             className={`${geistSans.variable} ${geistMono.variable} antialiased`}
