@@ -1,4 +1,3 @@
-import type {Metadata} from "next";
 import {Geist, Geist_Mono} from "next/font/google";
 import "./globals.css";
 import {Footer, Header, PageWrapper} from "@/app/component"
@@ -15,11 +14,10 @@ const geistMono = Geist_Mono({
     subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
+export const metadata = {
     title: "Pressure Recorder",
     description: "Save to blood pressure recorder",
 };
-
 
 
 export default function RootLayout({children,}: Readonly<{
@@ -27,7 +25,9 @@ export default function RootLayout({children,}: Readonly<{
 }>) {
     return (
         <html lang="en">
-        <link rel="manifest" href="/manifest.json" />
+        <head>
+            <link rel="manifest" href="/manifest.json"/>
+        </head>
         <body
             className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >

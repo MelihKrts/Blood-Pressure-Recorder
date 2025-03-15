@@ -1,7 +1,13 @@
+// @ts-ignore
 import withPWA from "next-pwa";
+import { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+    experimental: { esmExternals: "loose" },
+};
 
 export default withPWA({
-    experimental: { esmExternals: "loose" },
+    ...nextConfig,
     pwa: {
         dest: "public",
         register: true,
