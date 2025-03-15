@@ -1,5 +1,3 @@
-"use client";
-import { useEffect } from "react";
 import {Geist, Geist_Mono} from "next/font/google";
 import "./globals.css";
 import {Footer, Header, PageWrapper} from "@/app/component"
@@ -26,18 +24,7 @@ export const metadata: Metadata = {
 export default function RootLayout({children,}: Readonly<{
     children: React.ReactNode;
 }>) {
-    useEffect(() => {
-        if ("serviceWorker" in navigator) {
-            navigator.serviceWorker.register("/sw.js").then(
-                (registration) => {
-                    console.log("Service Worker registered with scope:", registration.scope);
-                },
-                (error) => {
-                    console.log("Service Worker registration failed:", error);
-                }
-            );
-        }
-    }, []);
+
     return (
         <html lang="en">
         <head>
