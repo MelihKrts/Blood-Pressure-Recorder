@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger,} from "@/components/ui/accordion";
 import {Noto_Sans_Mono} from "next/font/google";
 import Link from "next/link";
@@ -22,9 +22,41 @@ export default function Home() {
             );
         }
     }, []);
+
+    const [installPrompt, setInstallPrompt] = useState<Event | null>(null);
+    const [isInstalled, setIsInstalled] = useState(false);
+
+    useEffect(() => {
+        const handleBeforeInstallPrompt = (event: Event) => {
+            event.preventDefault();
+            setInstallPrompt(event);
+        };
+
+        window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+
+        return () => {
+            window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+        };
+    }, []);
+
+    const handleInstall = () => {
+        if (installPrompt) {
+            (installPrompt as any).prompt();
+            (installPrompt as any).userChoice.then((choiceResult: { outcome: string }) => {
+                if (choiceResult.outcome === "accepted") {
+                    console.log("Kullanıcı PWA'yı yükledi.");
+                    setIsInstalled(true);
+                } else {
+                    console.log("Kullanıcı PWA'yı reddetti.");
+                }
+                setInstallPrompt(null);
+            });
+        }
+    };
+
     return (
         <>
-                <div className="container flex justify-center items-center">
+                <div className="container flex flex-col justify-center items-center">
                     <div className="w-11/12 sm:w-full md:w-11/12 lg:w-11/12 flex flex-col rounded-lg border bg-white shadow-lg">
                         <div className="border-b px-4 py-3">
                             <div className={`${notoSansMono.className} text-sm font-medium`}>
@@ -78,6 +110,14 @@ export default function Home() {
                             </Accordion>
                         </div>
                     </div>
+                    {!isInstalled && installPrompt && (
+                        <button
+                            onClick={handleInstall}
+                            className="m-4 px-4 py-2 w-fit bg-blue-500 text-white rounded-lg"
+                        >
+                            Download Blood Pressure Recorder App
+                        </button>
+                    )}
                 </div>
         </>
     );
