@@ -8,6 +8,7 @@ const notoSansMono = Noto_Sans_Mono({
 });
 
 export default function Home() {
+
     return (
         <>
                 <div className="container flex justify-center items-center">

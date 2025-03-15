@@ -4,6 +4,7 @@
   "display": "standalone",
   "scope": "/",
   "start_url": "/",
+  "orientation": "portrait",
   "name": "Blood Pressure Recorder",
   "short_name": "BPR",
   "description": "Save to Blood Pressure Recoder",
