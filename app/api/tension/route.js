@@ -4,7 +4,7 @@ import {NextResponse} from "next/server";
 
 export async function POST(request) {
     const {bigTension, smallTension, selectedDate, pulse} = await request.json()
-    console.log("Received Data:", { bigTension, smallTension, selectedDate, pulse }); // ✅ Gelen verileri kontrol et
+    console.log("Received Data:", { bigTension, smallTension, selectedDate, pulse });
 
     await connectMongoDB()
     await Tension.create({bigTension, smallTension, selectedDate, pulse})

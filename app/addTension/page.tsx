@@ -20,12 +20,16 @@ export default function AddTension() {
     const [loadingId, setLoadingId] = useState<string | null>(null);
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
     const [pulse, setPulse] = useState<number | string>("")
+    const [editingId, setEditingId] = useState<string | null>(null)
+    const [isUpdating, setIsUpdating] = useState<boolean>(false);
 
     const CleanForm = () => {
         setBigTension("")
         setSmallTension("")
         setPulse("")
         setSelectedDate(undefined)
+        setEditingId(null)
+        setIsUpdating(false)
     }
 
     const ValidateForm = () => {
@@ -74,11 +78,10 @@ export default function AddTension() {
         }
 
         return true
-
     }
 
     const handleDownload = (format: "pdf" | "doc") => {
-        const content = tensionData.map(t => `Big Tension: ${t.bigTension}, Small Tension: ${t.smallTension} Date: ${t.selectedDate} Pulse: ${t.pulse}`,).join("\n");
+        const content = tensionData.map(t => `Date: ${new Date(t.selectedDate).toLocaleDateString("en-GB")} Big Tension: ${t.bigTension}, Small Tension: ${t.smallTension}  Pulse: ${t.pulse}`,).join("\n");
         const filename = "TensionData";
 
         if (format === "pdf") {
@@ -126,6 +129,23 @@ export default function AddTension() {
         }
     };
 
+    const handleEdit = (tension: {
+        bigTension: number;
+        smallTension: number;
+        selectedDate: Date;
+        pulse: number;
+        _id: string
+    }) => {
+        setBigTension(tension.bigTension);
+        setSmallTension(tension.smallTension);
+        setPulse(tension.pulse);
+        setSelectedDate(new Date(tension.selectedDate));
+        setEditingId(tension._id);
+        setIsUpdating(true);
+
+        // Scroll to form
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 
     const fetchTensionData = async () => {
         try {
@@ -143,21 +163,46 @@ export default function AddTension() {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (!ValidateForm()) return
+        if (!ValidateForm()) return;
 
         try {
-            const response = await fetch("/api/tension", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    bigTension: Number(bigTension),
-                    smallTension: Number(smallTension),
-                    selectedDate: selectedDate ? selectedDate.toISOString() : null,
-                    pulse: Number(pulse),
-                }),
-            });
+            let response;
+
+            // Format the date in a standard ISO format
+            const formattedDate = selectedDate ? selectedDate.toISOString() : null;
+
+            // Debug the date format
+            console.log("Sending date:", formattedDate);
+
+            // If updating, use the PUT endpoint with ID
+            if (isUpdating && editingId) {
+                response = await fetch(`/api/tension/${editingId}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        newBigTension: Number(bigTension),
+                        newSmallTension: Number(smallTension),
+                        newSelectedDate: formattedDate,
+                        newPulse: Number(pulse),
+                    }),
+                });
+            } else {
+                // If creating new, use the POST endpoint
+                response = await fetch("/api/tension", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        bigTension: Number(bigTension),
+                        smallTension: Number(smallTension),
+                        selectedDate: formattedDate,
+                        pulse: Number(pulse),
+                    }),
+                });
+            }
 
             const data = await response.json();
 
@@ -165,7 +210,11 @@ export default function AddTension() {
                 throw new Error(data.message || "An error occurred");
             }
 
-            toast.success("Tension information has been successfully saved", {
+            const successMessage = isUpdating
+                ? "Tension information has been successfully updated"
+                : "Tension information has been successfully saved";
+
+            toast.success(successMessage, {
                 position: "top-right",
                 theme: "colored",
                 autoClose: 3000,
@@ -173,11 +222,12 @@ export default function AddTension() {
                 transition: Slide,
             });
 
-            CleanForm()
+            CleanForm();
             fetchTensionData();
 
         } catch (err: any) {
-            toast.error(err.message, {
+            console.error("Error in handleSubmit:", err);
+            toast.error(err.message || "An unknown error occurred", {
                 position: "top-right",
                 theme: "colored",
                 autoClose: 3000,
@@ -190,6 +240,9 @@ export default function AddTension() {
     return (
         <div className="container flex-col flex items-center justify-center">
             <div className="w-1/2 max-sm:w-11/12 md:w-3/4 lg:w-1/2 py-4 flex flex-col">
+                <h2 className="text-xl font-bold mb-4">
+                    {isUpdating ? "Update Tension Record" : "Add New Tension Record"}
+                </h2>
                 <form onSubmit={handleSubmit}>
                     <label htmlFor="bigTension">Big Tension</label>
                     <Input
@@ -246,12 +299,24 @@ export default function AddTension() {
                            required
                     />
 
-                    <button
-                        className="bg-[#28a745] text-white border-[#28a745] hover:bg-[#218838] border-[#1e7e34] rounded-md cursor-pointer p-2 transition duration-150 hover:ease-in w-1/4 sm:w-full md:w-1/2 lg:w-1/4 mx-auto my-4"
-                        type="submit"
-                    >
-                        Submit
-                    </button>
+                    <div className="flex gap-2">
+                        <button
+                            className="bg-[#28a745] text-white border-[#28a745] hover:bg-[#218838] border-[#1e7e34] rounded-md cursor-pointer p-2 transition duration-150 hover:ease-in flex-grow mx-auto my-4"
+                            type="submit"
+                        >
+                            {isUpdating ? "Update" : "Submit"}
+                        </button>
+
+                        {isUpdating && (
+                            <button
+                                className="bg-[#6c757d] text-white hover:bg-[#5a6268] rounded-md cursor-pointer p-2 transition duration-150 hover:ease-in flex-grow mx-auto my-4"
+                                type="button"
+                                onClick={CleanForm}
+                            >
+                                Cancel
+                            </button>
+                        )}
+                    </div>
                 </form>
                 <ToastContainer/>
             </div>
@@ -263,20 +328,30 @@ export default function AddTension() {
                 ) : (
                     <ul className="space-y-2">
                         {tensionData.map((tension) => (
-                            <li key={tension._id} className="bg-white p-2 flex items-center rounded-md shadow-sm flex justify-between">
+                            <li key={tension._id}
+                                className="bg-white p-2 flex items-center justify-between rounded-md shadow-sm">
                                 <span>
                                     Big: {tension.bigTension} - Small: {tension.smallTension} -
                                     Date: {new Date(tension.selectedDate).toLocaleDateString()} -
                                     Pulse: {tension.pulse}
                                 </span>
 
-                                <button
-                                    onClick={() => handleDelete(tension._id)}
-                                    className="text-white text-center bg-[#dc3545] hover:bg-[#bb2d3b] transition duration-150 hover:ease-in rounded-md w-24 h-8 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                                    disabled={loadingId === tension._id}
-                                >
-                                    {loadingId === tension._id ? "Deleting..." : "Delete"}
-                                </button>
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={() => handleEdit(tension)}
+                                        className="text-white text-center bg-[#ffc107] hover:bg-[#e0a800] transition duration-150 hover:ease-in rounded-md w-20 h-8 cursor-pointer"
+                                    >
+                                        Edit
+                                    </button>
+
+                                    <button
+                                        onClick={() => handleDelete(tension._id)}
+                                        className="text-white text-center bg-[#dc3545] hover:bg-[#bb2d3b] transition duration-150 hover:ease-in rounded-md w-24 h-8 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                        disabled={loadingId === tension._id}
+                                    >
+                                        {loadingId === tension._id ? "Deleting..." : "Delete"}
+                                    </button>
+                                </div>
                             </li>
                         ))}
                     </ul>
