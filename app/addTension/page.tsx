@@ -206,6 +206,14 @@ export default function AddTension() {
 
             const data = await response.json();
 
+            if (data.offline) {
+                // Service worker tarafından offline kaydedildi
+                alert('Tansiyon veriniz offline olarak kaydedildi. İnternet bağlantısı geldiğinde otomatik olarak gönderilecek.');
+            } else {
+                // Normal kaydedildi
+                alert('Tansiyon veriniz başarıyla kaydedildi!');
+            }
+
             if (!response.ok) {
                 throw new Error(data.message || "An error occurred");
             }
