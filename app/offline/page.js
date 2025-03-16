@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import AddTension from "../addTension/page";
 
 export default function Offline() {
-    // Çevrimiçi durumunu takip etmek için state
     const [isOnline, setIsOnline] = useState(false);
 
     useEffect(() => {
@@ -13,7 +12,7 @@ export default function Offline() {
         // Çevrimiçi durumu değiştiğinde state'i güncelle
         const handleOnline = () => {
             setIsOnline(true);
-            console.log("Çevrimiçi olundu, veriler senkronize ediliyor...");
+            alert("Çevrimiçi olundu, veriler senkronize ediliyor...");
             // Çevrimiçi olduğumuzda senkronizasyonu tetikle
             if ('serviceWorker' in navigator && 'SyncManager' in window) {
                 navigator.serviceWorker.ready.then(registration => {
@@ -26,7 +25,7 @@ export default function Offline() {
 
         const handleOffline = () => {
             setIsOnline(false);
-            console.log("Çevrimdışı olundu, veriler yerel olarak saklanacak");
+            alert("Çevrimdışı olundu, veriler yerel olarak saklanacak");
         };
 
         // Event listener'ları ekle
