@@ -41,16 +41,35 @@
 //
 // export default nextConfig;
 
+// import withPWA from 'next-pwa';
+//
+// const nextConfig = withPWA({
+//     dest: 'public',
+//     register: true,
+//     skipWaiting: true,
+//     buildExcludes: [/app-build-manifest.json$/],
+//     fallbacks: {
+//         document: '/offline'
+//     } as any
+// });
+//
+// export default nextConfig;
+
+// next.config.ts
 import withPWA from 'next-pwa';
 
-const nextConfig = withPWA({
+const pwaConfig = withPWA({
     dest: 'public',
     register: true,
     skipWaiting: true,
-    buildExcludes: [/app-build-manifest.json$/],
-    fallbacks: {
-        document: '/offline'
-    } as any
+    disable: process.env.NODE_ENV === 'development',
+    buildExcludes: [/app-build-manifest.json$/]
 });
 
-export default nextConfig;
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+    reactStrictMode: true,
+    swcMinify: true
+};
+
+export default pwaConfig(nextConfig);
