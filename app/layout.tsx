@@ -3,6 +3,7 @@ import "./globals.css";
 import {Footer, Header, PageWrapper} from "@/app/component"
 import React from "react";
 import {Metadata} from "next"
+import ToastProvider from "@/app/component/shared/ToastProvider";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -40,6 +41,7 @@ export default function RootLayout({children,}: Readonly<{
             {children}
         </PageWrapper>
         <Footer/>
+        <ToastProvider />
         </body>
         </html>
     );
