@@ -1,143 +1,143 @@
-"use client";
+"use client"
 
-import React, { useEffect, useState, useCallback } from "react";
-import { supabase } from "@/lib/supabase";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Trash2, Edit2, X, FileText, Download } from "lucide-react";
-import { toast } from "react-toastify";
+import type React from "react"
+import { useEffect, useState, useCallback } from "react"
+import { supabase } from "@/lib/supabase"
+import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Label } from "@/components/ui/label"
+import { Trash2, Edit2, X, FileText, Download } from "lucide-react"
+import { toast } from "react-toastify"
 
 interface Reading {
-    id: string;
-    systolic: number;
-    diastolic: number;
-    pulse: number;
-    created_at: string;
+    id: string
+    systolic: number
+    diastolic: number
+    pulse: number
+    created_at: string
 }
 
 export default function AddTensionPage() {
-    const [values, setValues] = useState({ systolic: "", diastolic: "", pulse: "" });
-    const [loading, setLoading] = useState(false);
-    const [userName, setUserName] = useState<string | null>(null);
-    const [readings, setReadings] = useState<Reading[]>([]);
-    const [editingId, setEditingId] = useState<string | null>(null);
+    const [values, setValues] = useState({ systolic: "", diastolic: "", pulse: "" })
+    const [loading, setLoading] = useState(false)
+    const [userName, setUserName] = useState<string | null>(null)
+    const [readings, setReadings] = useState<Reading[]>([])
+    const [editingId, setEditingId] = useState<string | null>(null)
 
-    const router = useRouter();
+    const router = useRouter()
 
     const handlePDF = async () => {
-        const { exportToPDF } = await import("@/lib/exportUtils");
-        exportToPDF(readings);
-    };
+        const { exportToPDF } = await import("@/lib/exportUtils")
+        exportToPDF(readings)
+    }
 
     const handleDOC = async () => {
-        const { exportToDoc } = await import("@/lib/exportUtils");
-        exportToDoc(readings);
-    };
+        const { exportToDoc } = await import("@/lib/exportUtils")
+        exportToDoc(readings)
+    }
 
     const fetchReadings = useCallback(async () => {
-        const { data, error } = await supabase
-            .from("readings")
-            .select("*")
-            .order("created_at", { ascending: false });
+        const { data, error } = await supabase.from("readings").select("*").order("created_at", { ascending: false })
 
-        if (error) toast.error("Veriler alınamadı");
-        else setReadings(data || []);
-    }, []);
+        if (error) toast.error("Veriler alınamadı")
+        else setReadings(data || [])
+    }, [])
 
     useEffect(() => {
         const getSession = async () => {
-            const { data: { session } } = await supabase.auth.getSession();
+            const {
+                data: { session },
+            } = await supabase.auth.getSession()
 
             if (!session) {
-                router.push("/login");
+                router.push("/login")
             } else {
-                setUserName(session.user.email ?? "Kullanıcı");
-                fetchReadings();
+                setUserName(session.user.email ?? "Kullanıcı")
+                fetchReadings()
             }
-        };
-        getSession();
-    }, [router, fetchReadings]);
+        }
+        getSession()
+    }, [router, fetchReadings])
 
     const startEdit = (reading: Reading) => {
-        setEditingId(reading.id);
+        setEditingId(reading.id)
         setValues({
             systolic: reading.systolic.toString(),
             diastolic: reading.diastolic.toString(),
-            pulse: reading.pulse?.toString() ?? ""
-        });
+            pulse: reading.pulse?.toString() ?? "",
+        })
 
         if (typeof window !== "undefined") {
-            window.scrollTo({ top: 0, behavior: "smooth" });
+            window.scrollTo({ top: 0, behavior: "smooth" })
         }
-    };
+    }
 
     const cancelEdit = () => {
-        setEditingId(null);
-        setValues({ systolic: "", diastolic: "", pulse: "" });
-    };
+        setEditingId(null)
+        setValues({ systolic: "", diastolic: "", pulse: "" })
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
+        e.preventDefault()
+        setLoading(true)
 
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+            data: { user },
+        } = await supabase.auth.getUser()
 
         if (!user) {
-            toast.error("Oturum bulunamadı.");
-            setLoading(false);
-            return;
+            toast.error("Oturum bulunamadı.")
+            setLoading(false)
+            return
         }
 
         const payload = {
-            systolic: parseInt(values.systolic),
-            diastolic: parseInt(values.diastolic),
-            pulse: values.pulse ? parseInt(values.pulse) : null
-        };
+            systolic: Number.parseInt(values.systolic),
+            diastolic: Number.parseInt(values.diastolic),
+            pulse: values.pulse ? Number.parseInt(values.pulse) : null,
+        }
 
         if (editingId) {
             const { error: updateError } = await supabase
                 .from("readings")
                 .update(payload)
-                .match({ id: editingId, user_id: user.id });
+                .match({ id: editingId, user_id: user.id })
 
             if (updateError) {
-                toast.error("Güncelleme hatası: " + updateError.message);
+                toast.error("Güncelleme hatası: " + updateError.message)
             } else {
-                toast.success("Kayıt başarıyla güncellendi!");
-                cancelEdit();
-                fetchReadings();
+                toast.success("Kayıt başarıyla güncellendi!")
+                cancelEdit()
+                fetchReadings()
             }
         } else {
-            const { error: insertError } = await supabase
-                .from("readings")
-                .insert([{ ...payload, user_id: user.id }]);
+            const { error: insertError } = await supabase.from("readings").insert([{ ...payload, user_id: user.id }])
 
             if (insertError) {
-                toast.error("Kayıt hatası: " + insertError.message);
+                toast.error("Kayıt hatası: " + insertError.message)
             } else {
-                toast.success("Başarıyla kaydedildi!");
-                setValues({ systolic: "", diastolic: "", pulse: "" });
-                fetchReadings();
+                toast.success("Başarıyla kaydedildi!")
+                setValues({ systolic: "", diastolic: "", pulse: "" })
+                fetchReadings()
             }
         }
 
-        setLoading(false);
-    };
+        setLoading(false)
+    }
 
     const handleDelete = async (id: string) => {
-        if (!confirm("Bu kaydı silmek istediğinize emin misiniz?")) return;
+        if (!confirm("Bu kaydı silmek istediğinize emin misiniz?")) return
 
-        const { error } = await supabase.from("readings").delete().eq("id", id);
+        const { error } = await supabase.from("readings").delete().eq("id", id)
 
-        if (error) toast.error("Silme başarısız");
+        if (error) toast.error("Silme başarısız")
         else {
-            toast.success("Kayıt silindi.");
-            fetchReadings();
+            toast.success("Kayıt silindi.")
+            fetchReadings()
         }
-    };
+    }
 
     return (
         <div className="p-4 max-w-xl mx-auto space-y-6">
@@ -166,17 +166,31 @@ export default function AddTensionPage() {
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label>Büyük Tansiyon</Label>
-                                <Input type="number" required value={values.systolic} onChange={(e) => setValues({ ...values, systolic: e.target.value })} />
+                                <Input
+                                    type="number"
+                                    required
+                                    value={values.systolic}
+                                    onChange={(e) => setValues({ ...values, systolic: e.target.value })}
+                                />
                             </div>
                             <div className="space-y-2">
                                 <Label>Küçük Tansiyon</Label>
-                                <Input type="number" required value={values.diastolic} onChange={(e) => setValues({ ...values, diastolic: e.target.value })} />
+                                <Input
+                                    type="number"
+                                    required
+                                    value={values.diastolic}
+                                    onChange={(e) => setValues({ ...values, diastolic: e.target.value })}
+                                />
                             </div>
                         </div>
 
                         <div className="space-y-2">
                             <Label>Nabız</Label>
-                            <Input type="number" value={values.pulse} onChange={(e) => setValues({ ...values, pulse: e.target.value })} />
+                            <Input
+                                type="number"
+                                value={values.pulse}
+                                onChange={(e) => setValues({ ...values, pulse: e.target.value })}
+                            />
                         </div>
 
                         <Button
@@ -214,8 +228,7 @@ export default function AddTensionPage() {
                                         {item.systolic} / {item.diastolic}
                                     </p>
                                     <p className="text-sm text-muted-foreground">
-                                        Nabız: {item.pulse || "--"} |{" "}
-                                        {new Date(item.created_at).toLocaleDateString("tr-TR")}
+                                        Nabız: {item.pulse || "--"} | {new Date(item.created_at).toLocaleDateString("tr-TR")}
                                     </p>
                                 </div>
 
@@ -233,5 +246,5 @@ export default function AddTensionPage() {
                 )}
             </div>
         </div>
-    );
+    )
 }
