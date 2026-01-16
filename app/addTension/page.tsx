@@ -29,12 +29,12 @@ export default function AddTensionPage() {
     const router = useRouter()
 
     const handlePDF = async () => {
-        const { exportToPDF } = await import("@/lib/exportUtils")
+        const { exportToPDF } = await import("@/lib/exportUtils.client")
         exportToPDF(readings)
     }
 
     const handleDOC = async () => {
-        const { exportToDoc } = await import("@/lib/exportUtils")
+        const { exportToDoc } = await import("@/lib/exportUtils.client")
         exportToDoc(readings)
     }
 
