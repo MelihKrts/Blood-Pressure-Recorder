@@ -1,5 +1,4 @@
 "use client"
-export const dynamic = "force-dynamic";
 import React, { useEffect, useState, useCallback } from "react"
 import { supabase } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
@@ -58,7 +57,11 @@ export default function AddTensionPage() {
             diastolic: reading.diastolic.toString(),
             pulse: reading.pulse ? reading.pulse.toString() : ""
         });
-        window.scrollTo({ top: 0, behavior: 'smooth' }); // Formun olduğu yere kaydır
+
+        // Add this guard
+        if (typeof window !== "undefined") {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
     };
 
     const cancelEdit = () => {
