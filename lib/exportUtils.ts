@@ -1,8 +1,9 @@
+// lib/exportUtils.ts
+
 export const exportToPDF = async (readings: any[]) => {
     if (typeof window === "undefined") return;
 
     try {
-        // Dynamic import to prevent build-time errors
         const { jsPDF } = await import("jspdf");
         const doc = new jsPDF();
 
@@ -11,11 +12,13 @@ export const exportToPDF = async (readings: any[]) => {
         doc.setFontSize(12);
 
         let y = 30;
+
         readings.forEach((r, index) => {
             const date = new Date(r.created_at).toLocaleDateString("tr-TR");
-            const text = `${index + 1}. Tarih: ${date} | Deger: ${r.systolic}/${r.diastolic} | Nabiz: ${r.pulse || "-"}`;
+            const text = `${index + 1}. Tarih: ${date} | Değer: ${r.systolic}/${r.diastolic} | Nabız: ${r.pulse || "-"}`;
             doc.text(text, 20, y);
             y += 10;
+
             if (y > 280) {
                 doc.addPage();
                 y = 20;
@@ -28,6 +31,7 @@ export const exportToPDF = async (readings: any[]) => {
     }
 };
 
+
 export const exportToDoc = async (readings: any[]) => {
     if (typeof window === "undefined") return;
 
@@ -37,7 +41,7 @@ export const exportToDoc = async (readings: any[]) => {
         let content = "Tansiyon Takip Raporu\n\n";
         readings.forEach((r, index) => {
             const date = new Date(r.created_at).toLocaleDateString("tr-TR");
-            content += `${index + 1}. Tarih: ${date} - Tansiyon: ${r.systolic}/${r.diastolic} - Nabiz: ${r.pulse || "-"}\n`;
+            content += `${index + 1}. Tarih: ${date} - Tansiyon: ${r.systolic}/${r.diastolic} - Nabız: ${r.pulse || "-"}\n`;
         });
 
         const blob = new Blob([content], { type: "application/msword" });
