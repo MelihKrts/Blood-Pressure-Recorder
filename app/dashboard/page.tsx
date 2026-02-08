@@ -36,22 +36,6 @@ export default function DashboardPage() {
     const [errors, setErrors] = useState<Record<string,string>>({})
 
 
-    const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const selectedTime = e.target.value
-
-        // bugün mü?
-        if (formData.date === getTodayString()) {
-            const now = getCurrentTimeString()
-
-            // 🚫 gelecek saat
-            if (selectedTime > now) {
-                return // state güncellenmez → UI bloke
-            }
-        }
-
-        setFormData({ ...formData, time: selectedTime })
-    }
-
 
     useEffect(() => {
         const timer = setInterval(()=> {
@@ -100,19 +84,6 @@ export default function DashboardPage() {
         time:"",
     })
 
-    useEffect(() => {
-        if (!formData.time) return
-
-        if (formData.date === getTodayString()) {
-            const now = getCurrentTimeString()
-            if (formData.time > now) {
-                setFormData((prev) => ({
-                    ...prev,
-                    time: now,
-                }))
-            }
-        }
-    }, [formData.date])
 
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -257,7 +228,9 @@ export default function DashboardPage() {
                             label="Ölçüm Saati"
                             type="time"
                             value={formData.time}
-                            onChange={handleTimeChange}
+                            onChange={(e) =>
+                                setFormData({ ...formData, time: e.target.value })
+                            }
                             error={errors.time}
                             step="60"
                             max={

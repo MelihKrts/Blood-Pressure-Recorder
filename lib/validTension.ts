@@ -18,16 +18,18 @@ export const authTensionSchema = z.object({
 })
     .refine((data) => {
         const now = new Date()
+        now.setSeconds(0, 0) // 🔥 saniye & ms SIFIRLA
+
         const [y, m, d] = data.date.split("-").map(Number)
         const [h, min] = (data.time || "00:00").split(":").map(Number)
 
         const measuredAt = new Date(y, m - 1, d, h, min)
-
         return measuredAt <= now
     }, {
         message: "Gelecek tarih veya saat seçemezsiniz",
         path: ["time"]
     })
+
     .refine(
         (data) => data.systolic > data.diastolic,
         {
