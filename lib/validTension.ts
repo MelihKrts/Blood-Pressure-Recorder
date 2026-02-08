@@ -19,9 +19,21 @@ export const authTensionSchema = z.object({
 })
     .refine((data) => {
         const safeTime = data.time && data.time !== "" ? data.time : "00:00"
+
         const measuredAt = new Date(`${data.date}T${safeTime}:00`)
 
-        return measuredAt <= new Date()
+        const today = new Date()
+        const todayDateString = today.toISOString().slice(0, 10)
+
+        if (data.date < todayDateString) {
+            return true
+        }
+
+        if (data.date === todayDateString) {
+            return measuredAt <= today
+        }
+
+        return false
     }, {
         message: "Gelecek tarih veya saat seçemezsiniz",
         path: ["time"]
