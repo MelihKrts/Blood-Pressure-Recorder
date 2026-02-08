@@ -1,16 +1,18 @@
-import withPWA from "next-pwa";
-import {NextConfig} from "next";
+import withPWAInit from "next-pwa";
+import { NextConfig } from "next";
+
+const withPWA = withPWAInit({
+  dest: "public",
+  register: true,
+  skipWaiting: true,
+  disable: process.env.NODE_ENV === "development",
+});
 
 const nextConfig: NextConfig = {
-    reactStrictMode: true,
-    experimental: {
-        webVitalsAttribution: ["CLS", "LCP"]
-    }
+  reactStrictMode: true,
+  experimental: {
+    webVitalsAttribution: ["CLS", "LCP"],
+  },
 };
 
-export default withPWA({
-    dest: "public",
-    register: true,
-    skipWaiting: true,
-    disable: process.env.NODE_ENV === "development",
-})(nextConfig as any);
+export default withPWA(nextConfig);
