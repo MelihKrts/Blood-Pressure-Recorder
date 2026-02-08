@@ -84,6 +84,21 @@ export default function DashboardPage() {
         time:"",
     })
 
+    const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedTime = e.target.value
+        const today = getTodayString()
+
+        if (formData.date === today) {
+            const now = getCurrentTimeString()
+
+            if (selectedTime > now) {
+                toast.error("Gelecek saat seçemezsiniz")
+                return
+            }
+        }
+
+        setFormData({ ...formData, time: selectedTime })
+    }
 
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -223,23 +238,24 @@ export default function DashboardPage() {
 
                         <FormField id="date" label="Ölçüm Tarihi" type="date" value={formData.date} onChange={(e)=> setFormData({...formData, date: e.target.value})}  error={errors.date} required max={getTodayString()} />
 
-                        <FormField
-                            id="time"
-                            label="Ölçüm Saati"
-                            type="time"
-                            value={formData.time}
-                            onChange={(e) =>
-                                setFormData({ ...formData, time: e.target.value })
-                            }
-                            error={errors.time}
-                            step="60"
-                            max={
-                                formData.date === getTodayString()
-                                    ? getCurrentTimeString()
-                                    : undefined
-                            }
-                        />
+                        {/*<FormField*/}
+                        {/*    id="time"*/}
+                        {/*    label="Ölçüm Saati"*/}
+                        {/*    type="time"*/}
+                        {/*    value={formData.time}*/}
+                        {/*    onChange={(e) =>*/}
+                        {/*        setFormData({ ...formData, time: e.target.value })*/}
+                        {/*    }*/}
+                        {/*    error={errors.time}*/}
+                        {/*    step="60"*/}
+                        {/*    max={*/}
+                        {/*        formData.date === getTodayString()*/}
+                        {/*            ? getCurrentTimeString()*/}
+                        {/*            : undefined*/}
+                        {/*    }*/}
+                        {/*/>*/}
 
+                        <FormField id="time" label="Ölçüm Saati" type="time" value={formData.time} onChange={handleTimeChange} error={errors.time} step="60" max={ formData.date === getTodayString() ? getCurrentTimeString() : undefined } />
 
 
 
