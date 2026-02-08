@@ -1,4 +1,5 @@
 import * as z from "zod"
+
 export const authTensionSchema = z.object({
     systolic: z.coerce.number().min(20).max(300),
     diastolic: z.coerce.number().min(20).max(300),
@@ -18,18 +19,25 @@ export const authTensionSchema = z.object({
 })
     .refine((data) => {
         const now = new Date()
-        now.setSeconds(0, 0) // 🔥 saniye & ms SIFIRLA
+        now.setSeconds(0, 0)
 
-        const [y, m, d] = data.date.split("-").map(Number)
-        const [h, min] = (data.time || "00:00").split(":").map(Number)
+        const todayStr = now.toISOString().split("T")[0]
 
-        const measuredAt = new Date(y, m - 1, d, h, min)
-        return measuredAt <= now
+        if (data.date < todayStr) return true
+
+        if (data.date > todayStr) return false
+
+        if (!data.time) return true
+
+        const [h, m] = data.time.split(":").map(Number)
+        const selectedTime = new Date()
+        selectedTime.setHours(h, m, 0, 0)
+
+        return selectedTime <= now
     }, {
-        message: "Gelecek tarih veya saat seçemezsiniz",
+        message: "Gelecek saat seçemezsiniz",
         path: ["time"]
     })
-
     .refine(
         (data) => data.systolic > data.diastolic,
         {
