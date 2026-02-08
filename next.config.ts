@@ -1,9 +1,11 @@
 import withPWA from "next-pwa";
+import {NextConfig} from "next";
 
-const nextConfig = {
+const nextConfig: NextConfig = {
     reactStrictMode: true,
-    swcMinify: true,
-    turbopack: {},
+    experimental: {
+        webVitalsAttribution: ["CLS", "LCP"]
+    }
 };
 
 export default withPWA({
@@ -11,4 +13,4 @@ export default withPWA({
     register: true,
     skipWaiting: true,
     disable: process.env.NODE_ENV === "development",
-})(nextConfig);
+})(nextConfig as any);
