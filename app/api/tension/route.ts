@@ -36,7 +36,18 @@ export async function POST(req: Request) {
         }
         const {systolic, diastolic, pulse, notes,date,time} = validation.data
 
-        const measuredAt = new Date(`${date}T${time || "00:00"}`)
+        const [year, month, day] = date.split("-").map(Number)
+        const [hour, minute] = (time || "00:00").split(":").map(Number)
+
+        const measuredAt = new Date(
+            year,
+            month - 1, // JS month 0-based
+            day,
+            hour,
+            minute,
+            0,
+            0
+        )
 
         const newRecord = await Tension.create({
             userId: decoded.userId,
