@@ -13,12 +13,14 @@ interface AuthFormProps {
     email: string,
     setEmail: (val: string) => void,
     password: string,
+    maxLength?:number,
+    minLength?:number,
     setPassword: (val: string) => void,
     onSubmit: (e: React.FormEvent) => void,
     errors?: { email?: string, password?: string },
 }
 
-export function AuthForm({title, buttonText, loading, linkText, linkHref, email, setEmail, password, setPassword, errors, onSubmit}: AuthFormProps) {
+export function AuthForm({title, minLength, maxLength, buttonText, loading, linkText, linkHref, email, setEmail, password, setPassword, errors, onSubmit}: AuthFormProps) {
     return (
         <section className="w-full">
             <div className="@container">
@@ -31,7 +33,7 @@ export function AuthForm({title, buttonText, loading, linkText, linkHref, email,
                             <form onSubmit={onSubmit} className="space-y-4">
 
                                 <FormField id="email" label="E-posta" type="email" value={email}
-                                           onChange={(e) => setEmail(e.target.value)} error={errors?.email}/>
+                                           onChange={(e) => setEmail(e.target.value)} error={errors?.email} required   />
 
                                 <FormField id="password" label="Şifre" type="password" value={password}
                                            onChange={(e) => setPassword(e.target.value)} error={errors?.password}/>

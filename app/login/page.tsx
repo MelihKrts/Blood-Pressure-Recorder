@@ -1,6 +1,5 @@
 "use client"
 import React, { useState, useRef, useEffect } from "react"
-import { supabase } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
 import { AuthForm } from "@/app/component/auth/AuthForm"
 import { authSchema } from "@/lib/validation"
@@ -13,10 +12,8 @@ export default function LoginPage() {
     const [errors, setErrors] = useState<{ email?: string, password?: string }>({})
     const router = useRouter()
 
-    // Zamanlayıcıyı takip etmek için ref
     const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    // Component kapandığında zamanlayıcıyı temizle
     useEffect(() => {
         return () => {
             if (timerRef.current) clearTimeout(timerRef.current);
@@ -50,22 +47,28 @@ export default function LoginPage() {
         setErrors({})
         setLoading(true)
 
-        const { error } = await supabase.auth.signInWithPassword({ email, password })
+        try {
+            const res = await fetch("/api/auth/login", {
+                method: "POST",
+                headers:{"Content-Type": "application/json"},
+                body: JSON.stringify(result.data)
+            })
+            const data = await res.json()
 
-        if (error) {
-            const msg = error.message.includes("phone") ? "E-posta veya şifre hatalı" : error.message
-            toast.error(msg)
-            setLoading(false) // Hata varsa butonu tekrar aktif et
-        } else {
-            toast.success("Giriş başarılı! Yönlendiriliyorsunuz...")
-
-            // 3 saniye sonra yönlendir ve ref'e kaydet
-            timerRef.current = setTimeout(() => {
-                router.push("/addTension")
-            }, 3000)
-
-            // Not: setLoading(false) yapmıyoruz ki yönlendirme süresince buton 'loading' kalsın.
+            if(!res.ok) {
+                toast.error(data.error || "Giriş yapılamadı")
+                setLoading(false)
+                return
+            }
+            toast.success("Giriş başarılı yönlendiriliyorsunux")
+            timerRef.current = setTimeout(()=> {
+                router.push("/dashboard")
+            },2000)
+        } catch(error) {
+            toast.error("Bir hata oluştu")
+            setLoading(false)
         }
+
     }
 
     return (

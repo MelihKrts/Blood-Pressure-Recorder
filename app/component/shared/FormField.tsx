@@ -10,10 +10,12 @@ interface FormFieldProps {
     value: string,
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
     required?: boolean,
-    error?: string
+    error?: string,
+    max?:string,
+    step?:string,
 }
 
-export function FormField({id, label, type, value, onChange, required, error}: FormFieldProps) {
+export function FormField({id, label, type, max, step, value, onChange, required, error}: FormFieldProps) {
     const [showPassword, setShowPassword] = useState(false)
     const isPassword = type === "password"
 
@@ -22,7 +24,7 @@ export function FormField({id, label, type, value, onChange, required, error}: F
             <Label className="space-y-2" htmlFor={id}>{label}</Label>
             <div className="relative">
 
-                <Input id={id} type={isPassword ? (showPassword ? "text": "password"): type} required={required} value={value} onChange={onChange}
+                <Input max={max} id={id} type={isPassword ? (showPassword ? "text": "password"): type} step={step} required={required} value={value} onChange={onChange}
                        className={error ? "border-red-500" : ""}/>
                 {isPassword && (
                     <button type="button" onClick={() => setShowPassword(!showPassword)}

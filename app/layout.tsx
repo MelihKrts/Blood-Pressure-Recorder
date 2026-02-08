@@ -18,7 +18,6 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
     title: "Pressure Recorder",
     description: "Save to blood pressure recorder",
-    themeColor: "#f69435",
 };
 
 
