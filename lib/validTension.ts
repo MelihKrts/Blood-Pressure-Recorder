@@ -9,18 +9,23 @@ export const authTensionSchema = z.object({
 
     date: z
         .string()
-        .regex(/^\d{4}-\d{2}-\d{2}$/)
-        .refine((val) => {
-            const today = new Date().toISOString().split("T")[0]
-            return val <= today
-        }, "Gelecek tarih seçemezsiniz"),
+        .regex(/^\d{4}-\d{2}-\d{2}$/, "Geçersiz tarih formatı (YYYY-MM-DD)"),
 
     time: z
         .string()
-        .regex(/^([01]\d|2[0-3]):([0-5]\d)$/)
+        .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Geçersiz saat formatı (HH:mm)")
         .optional()
         .or(z.literal("")),
 })
+    .refine((data) => {
+        const safeTime = data.time && data.time !== "" ? data.time : "00:00"
+        const measuredAt = new Date(`${data.date}T${safeTime}:00`)
+
+        return measuredAt <= new Date()
+    }, {
+        message: "Gelecek tarih veya saat seçemezsiniz",
+        path: ["time"]
+    })
     .refine(
         (data) => data.systolic > data.diastolic,
         {
