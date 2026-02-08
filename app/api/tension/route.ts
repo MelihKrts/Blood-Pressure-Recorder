@@ -44,7 +44,9 @@ export async function POST(req: Request) {
             diastolic,
             pulse,
             notes,
-            measuredAt
+            measuredAt,
+            date,
+            time:time || "",
         })
 
         return NextResponse.json({message: "Kayıt başarılı", data: newRecord}, {status: 201})
