@@ -20,9 +20,20 @@ export default function DashboardPage() {
         setEditOpen(true)
     }
 
+    const handleLogout = async () => {
+        try {
+            const res = await fetch("/api/auth/logout", { method: "POST" });
+            if (res.ok) {
+                window.location.href = "/login";
+            }
+        } catch (error) {
+            console.error("Çıkış yapılırken hata oluştu", error);
+        }
+    };
+
     return (
         <div className="container mx-auto p-4 space-y-8">
-            <DashBoardHeader onLogout={() => window.location.href = "/login"} />
+            <DashBoardHeader onLogout={handleLogout} />
 
             <StatsCards tensions={tensions} />
 
