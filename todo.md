@@ -13,9 +13,15 @@
 -[x] Tansiyon verilerini kaydedeceğimiz yeni bir Pressure modeli oluşturmak.
 
 -[x] Tansiyon form kaydederken error meajı
-- [ ] DRY yapı tekrarı
-- [ ] kod tekrarı
+- [x] DRY yapı tekrarı
+- [x] kod tekrarı (büyük oranda çözüldü)
 - [ ] zod hata mesajlarını kontrol et
 - [x] DELETE, GET yap
 - [x] Logout olunca cookies yok et.
-- [ ] Tarih, saat input ekle
+- [x] Tarih, saat input ekle (tarih eklendi mevcut gün sonrası seçememe düzenlenmeli)
+- [x] Grafik veri görselleştirme
+- [x] PDF/DOC indirilme özelliği
+- [x] Tansiyon renk uyarısı
+- [ ] Form ekranı merkez ortada değil
+- [ ] PWA Düzenlemesi
+- [x] Tarih bilgisi getirme
