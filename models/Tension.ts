@@ -4,10 +4,8 @@ export interface ITension extends Document {
     userId: mongoose.Types.ObjectId
     systolic: number,    // büyük tansiyon
     diastolic: number,   // küçük tansiyon
-    pulse: number,       // nabiz
-    measuredAt: Date,
+    pulse?: number,       // nabiz
     date: String,
-    time?: string,
     notes?: string,      // isteğe bağlı not
 }
 
@@ -31,24 +29,17 @@ const TensionSchema = new Schema<ITension>({
         },
         pulse: {
             type: Number,
-            required: [true, "Nabız değerleri girilmelidir."],
+            required: false,
         },
         notes: {
             type: String,
             trim: true,
             maxLength: 500,
         },
-        measuredAt: {
-            type: Date,
-            default: Date.now,
-        },
         date: {
             type: String,
             required: [true, "Tarih Zorunludur"],
         },
-        time: {
-            type: String,
-        }
     },
     {timestamps: true}
 )

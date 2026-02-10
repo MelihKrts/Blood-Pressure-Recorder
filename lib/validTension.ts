@@ -1,48 +1,12 @@
-import * as z from "zod"
+import * as z from "zod";
 
 export const authTensionSchema = z.object({
-    systolic: z.coerce.number().min(20).max(300),
-    diastolic: z.coerce.number().min(20).max(300),
-    pulse: z.coerce.number().min(30).max(250),
-
-    notes: z.string().max(500).optional().or(z.literal("")),
-
-    date: z
-        .string()
-        .regex(/^\d{4}-\d{2}-\d{2}$/, "Geçersiz tarih formatı (YYYY-MM-DD)"),
-
-    time: z
-        .string()
-        .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Geçersiz saat formatı (HH:mm)")
-        .optional()
-        .or(z.literal("")),
-})
-    .refine((data) => {
-        const safeTime = data.time && data.time !== "" ? data.time : "00:00"
-
-        const measuredAt = new Date(`${data.date}T${safeTime}:00`)
-
-        const today = new Date()
-        const todayDateString = today.toISOString().slice(0, 10)
-
-        if (data.date < todayDateString) {
-            return true
-        }
-
-        if (data.date === todayDateString) {
-            return measuredAt <= today
-        }
-
-        return false
-    }, {
-        message: "Gelecek tarih veya saat seçemezsiniz",
-        path: ["time"]
-    })
-    .refine(
-        (data) => data.systolic > data.diastolic,
-        {
-            message: "Büyük tansiyon küçük tansiyondan yüksek olmalıdır",
-            path: ["systolic"]
-        }
-    )
-    .strict()
+    systolic: z.coerce.number().min(20,"Girilecek sayı 20'ye eşit veya daha büyük olmalıdır").max(300,"Değer en fazla 300 olmalıdır"),
+    diastolic: z.coerce.number().min(20,"Girilecek sayı 20'ye eşit veya daha büyük olmalıdır").max(300,"Değer en fazla 300 olmalıdır"),
+    pulse: z.union([z.coerce.number(), z.literal(""), z.null()]).optional(),
+    notes: z.string().max(500,"Not en fazla 500 karakter olabilir").optional().default(""),
+    date: z.string().min(1, "Tarih gereklidir"),
+}).refine((data) => data.systolic > data.diastolic, {
+    message: "Büyük tansiyon küçük tansiyondan yüksek olmalıdır",
+    path: ["systolic"]
+});
