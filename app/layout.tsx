@@ -14,9 +14,13 @@ const geistMono = Geist_Mono({
     variable: "--font-geist-mono",
     subsets: ["latin"],
 });
-const baseUrl = process.env.NEXT_PUBLIC_URL
+
+
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL!;
 
 export const metadata: Metadata = {
+    metadataBase: new URL(baseUrl),
+
     title: {
         default: "Blood Pressure Record",
         template: "%s - Blood Pressure Record",
@@ -42,12 +46,12 @@ export const metadata: Metadata = {
 
     twitter: {
         card: "summary_large_image",
-        site:"https://blood-pressure-recorder.vercel.app",
         title: "Blood Pressure Record",
         description: "Save to blood pressure recorder",
-        images: ["/opengraph-image.png"],
+        images: `${baseUrl}/opengraph-image.png`,
     },
 };
+
 
 
 export default function RootLayout({children,}: Readonly<{
