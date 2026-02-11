@@ -42,6 +42,7 @@ export const metadata: Metadata = {
 
     twitter: {
         card: "summary_large_image",
+        site:`${baseUrl}`,
         title: "Blood Pressure Record",
         description: "Save to blood pressure recorder",
         images: `${baseUrl}/opengraph-image.png`,
