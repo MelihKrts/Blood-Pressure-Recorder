@@ -44,12 +44,7 @@ export const metadata: Metadata = {
         card: "summary_large_image",
         title: "Blood Pressure Record",
         description: "Save to blood pressure recorder",
-        images: [
-            {
-                url: `${baseUrl}/opengraph-image.png`,
-                alt: "Blood Pressure Record",
-            },
-        ],
+        images: `${baseUrl}/opengraph-image.png`,
     },
 };
 
