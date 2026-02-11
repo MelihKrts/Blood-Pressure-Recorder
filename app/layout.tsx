@@ -14,16 +14,43 @@ const geistMono = Geist_Mono({
     variable: "--font-geist-mono",
     subsets: ["latin"],
 });
+const baseUrl = process.env.NEXT_PUBLIC_URL
 
 export const metadata: Metadata = {
     title: {
-        default:"Blood Pressure Record",
-        template:"%s - Blood Pressure Record",
+        default: "Blood Pressure Record",
+        template: "%s - Blood Pressure Record",
     },
+
     description: "Save to blood pressure recorder",
-    twitter:{
-        card:"summary_large_image"
-    }
+
+    openGraph: {
+        title: "Blood Pressure Record",
+        description: "Save to blood pressure recorder",
+        url: baseUrl,
+        siteName: "Blood Pressure Record",
+        type: "website",
+        images: [
+            {
+                url: `${baseUrl}/opengraph-image.png`,
+                width: 1200,
+                height: 630,
+                alt: "Blood Pressure Record",
+            },
+        ],
+    },
+
+    twitter: {
+        card: "summary_large_image",
+        title: "Blood Pressure Record",
+        description: "Save to blood pressure recorder",
+        images: [
+            {
+                url: `${baseUrl}/opengraph-image.png`,
+                alt: "Blood Pressure Record",
+            },
+        ],
+    },
 };
 
 
