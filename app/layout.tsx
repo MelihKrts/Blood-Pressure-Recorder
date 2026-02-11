@@ -36,7 +36,7 @@ export const metadata: Metadata = {
         type: "website",
         images: [
             {
-                url: `${baseUrl}/opengraph-image.png`,
+                url: "/opengraph-image.png", // relative ama metadataBase ile absolute olur
                 width: 1200,
                 height: 630,
                 alt: "Blood Pressure Record",
@@ -48,11 +48,9 @@ export const metadata: Metadata = {
         card: "summary_large_image",
         title: "Blood Pressure Record",
         description: "Save to blood pressure recorder",
-        images: `${baseUrl}/opengraph-image.png`,
+        images: "/opengraph-image.png",
     },
 };
-
-
 
 export default function RootLayout({children,}: Readonly<{
     children: React.ReactNode;
