@@ -45,7 +45,7 @@ export const metadata: Metadata = {
         site:`${baseUrl}`,
         title: "Blood Pressure Record",
         description: "Save to blood pressure recorder",
-        images: `${baseUrl}/opengraph-image.png`,
+        images: ["/opengraph-image.png"],
     },
 };
 
