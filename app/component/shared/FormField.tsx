@@ -5,14 +5,22 @@ import React, { useState } from "react"
 import { Eye, EyeOff } from "lucide-react"
 
 interface FormFieldProps {
-    id: string; name: string; label: string;
-    type: "text" | "number" | "password" | "date" | "textarea";
-    value: string; onChange: (e: any) => void;
-    error?: string; min?: number; max?: string | number;
-    maxLength?: number; step?: number; placeholder?: string;
+    id: string;
+    name: string;
+    label: string;
+    type: "text" | "number" | "password" | "date" | "textarea" | "email";
+    value: string;
+    onChange: (e: any) => void;
+    error?: string;
+    min?: number;
+    max?: string | number;
+    maxLength?: number;
+    step?: number;
+    required?:boolean,
+    placeholder?: string;
 }
 
-export function FormField({ id, name, label, type, value, onChange, error, min, max, maxLength, step, placeholder }: FormFieldProps) {
+export function FormField({ id, name, label, type, value, onChange, error, min, max, maxLength, required,  placeholder }: FormFieldProps) {
     const [showPassword, setShowPassword] = useState(false);
     const commonProps = {
         id, name, value: value ?? "", onChange, maxLength, min, max, placeholder,

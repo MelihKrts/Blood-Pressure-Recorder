@@ -41,7 +41,7 @@ export const AccordionUI = () => {
                                         <li>Çoklu cihazlardan erişin.</li>
                                     </ul>
 
-                                    <Link href="/addTension" className="flex gap-2 items-center text-[#007bff] py-2">Verilerinizi kaydetmeye başlayın
+                                    <Link href="/login" className="flex gap-2 items-center text-[#007bff] py-2">Verilerinizi kaydetmeye başlayın
                                     <ChevronRight/></Link>
 
                                 </AccordionContent>
