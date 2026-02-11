@@ -42,7 +42,7 @@ export const metadata: Metadata = {
 
     twitter: {
         card: "summary_large_image",
-        site:`${baseUrl}`,
+        site:"https://blood-pressure-recorder.vercel.app",
         title: "Blood Pressure Record",
         description: "Save to blood pressure recorder",
         images: ["/opengraph-image.png"],
